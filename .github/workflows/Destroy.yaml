@@ -27,6 +27,9 @@ jobs:
     - name: Initialize Terraform
       run: terraform init
 
+    - name: Terraform Refresh (Optional, to update state)
+      run: terraform refresh
+
     - name: Terraform Plan (Destroy)
       run: terraform plan -destroy -out=tfplan
 
