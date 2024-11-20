@@ -1,7 +1,7 @@
 name: Terraform Destroy Workflow
 
 on:
-  workflow_dispatch: # Permite iniciar manualmente el workflow desde la UI de GitHub
+  workflow_dispatch:  # Permite iniciar manualmente el workflow desde la UI de GitHub
 
 jobs:
   terraform-destroy:
@@ -9,14 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Paso 1: Checkout el código fuente
     - name: Checkout the repository
       uses: actions/checkout@v3
 
+    # Paso 2: Configurar Terraform
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.5.0
 
+    # Paso 3: Configurar las credenciales de AWS (usando los secretos de GitHub)
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -24,17 +27,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    # Paso 4: Inicializar Terraform (esto configurará el backend S3)
     - name: Initialize Terraform
       run: terraform init
 
+    # Paso 5: (Opcional) Refrescar el estado local para que se sincronice con el estado remoto
     - name: Terraform Refresh (Optional, to update state)
       run: terraform refresh
 
+    # Paso 6: Crear el plan de destrucción de infraestructura
     - name: Terraform Plan (Destroy)
       run: terraform plan -destroy -out=tfplan
 
+    # Paso 7: Verificar que el archivo del plan se haya creado
     - name: Verify Plan File
       run: test -f tfplan
 
+    # Paso 8: Aplicar el plan de destrucción (esto destruirá los recursos)
     - name: Terraform Apply (Destroy)
       run: terraform apply -auto-approve tfplan
