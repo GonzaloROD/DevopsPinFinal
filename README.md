@@ -1,24 +1,30 @@
-Pasos para probar el Pipiline
+Pasos para probar el Pipeline:
 
-1.Clonar repo
+1- Clonar el repositorio
+Clona el repositorio desde el control de versiones para tener acceso al código.
 
-2.Agregar llaves con acceso de administrador de AWS en el vaul de Github
+2- Agregar las llaves de acceso de administrador de AWS en el repositorio de GitHub
+para que el pipeline pueda interactuar con los servicios de AWS.
 
-3.Aplicar cambios en la rama Test
+3- Aplicar cambios en la rama Test: Realiza los cambios necesarios y súbelos a la rama Test del repositorio.
 
-4.Aplicar pull request , cuando este se aplica corre el flujo del github action el cual tiene 2 pasos una primera
-   etapa en la que hace una terraform plan y valida que este ok , una vez este esta ok corre el gitaction para aplicar el terraform y hace el despliegue
+4- Realizar un Pull Request: Cuando se aplique el Pull Request, se ejecutará el flujo de GitHub Actions, que consta de dos etapas:
+a- Terraform Plan: Se ejecuta el comando terraform plan para validar que todo esté correcto.
+b- Terraform Apply: Si el plan es válido, se ejecuta el terraform apply para desplegar los cambios.
 
-5.Aqui debes abrir la VM y entrar por SSH por ssh conect y correr el comando docker network inspect monitoring
+5- Acceder a la Instancia por SSH: Dentro de la instancia utiliza el comando "docker network inspect monitoring" para ver la configuración de la red Docker y obtener la IP privada del contenedor de Prometheus, usaremos esta IP para configurar Grafana como fuente de datos.
 
-6.Con este comando sacas la ip privada que tiene el contenedor de prometheus para luego enlazarlo como data principal en el grafana
-   
-7.Acceder al  grafana por la ip publica y el puerto 3000, y alli ir a conection y seleccionar data sources, escojes prometheus
+6- Acceder a Grafana: Abre Grafana usando la IP pública y el puerto 3000. Luego, accede a Configuration > Data Sources y selecciona Prometheus como fuente de datos.
 
-8.Colocar la url de prometheus: http://x.x.x.x:9090 le das tes conection y si todo va bien puedes  ya tienes conexion ok con el data sources
-   
-9.Crear dashboard y le das import y colocas el ID 893 o la siguiente url https://grafana.com/grafana/dashboards/893-main/
+7- Configurar la URL de Prometheus en Grafana: En el campo de URL de Prometheus, ingresa:
+http://<IP_Prometheus>:9090
+Haz clic en "Test Connection" y asegúrate de que la conexión sea exitosa.
 
-10.Con esto tendras en dahsboard que monitorea los contenedores
-    
-12. para aplicar el terraform destroy se hace de manera manuel debes ir action y seleccionar el yaml destroy.
+8- Crear un Dashboard en Grafana: Crea un nuevo dashboard en Grafana y selecciona Import. Luego, ingresa el ID del dashboard: 893, o utiliza la siguiente URL para importar el dashboard:
+https://grafana.com/grafana/dashboards/893-main/
+
+9- Visualización de contenedores
+Ahora tendrás un dashboard que te permitirá monitorear los contenedores en ejecución.
+
+10- Aplicar Terraform Destroy (Manual)
+Para destruir los recursos desplegados, realiza la acción de terraform destroy. Esto se hace manualmente desde el flujo de trabajo seleccionando el archivo YAML correspondiente (action) con el nombre destroy. 
