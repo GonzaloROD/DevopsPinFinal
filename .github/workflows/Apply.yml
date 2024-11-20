@@ -1,11 +1,9 @@
 name: Terraform Plan and Apply for AWS
 
-# Ejecuta el workflow en pull requests y cuando se hace merge a la rama main
 on:
   pull_request:
     branches:
       - main
-
   push:
     branches:
       - main
@@ -16,16 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del código fuente
+      # Paso 1: Checkout del código fuente
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configurar Terraform CLI
+      # Paso 2: Configurar Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.8.4  # Version terraform 
-      # Configurar las credenciales de AWS usando los secretos
+          terraform_version: 1.8.4  # Versión de Terraform que deseas usar
+
+      # Paso 3: Configurar las credenciales de AWS (usando los secretos de GitHub)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -33,17 +32,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1  # Cambia la región según tus necesidades
 
-      # Inicializar Terraform
-      - name: Terraform Init
+      # Paso 4: Inicializar Terraform (esto configurará el backend S3)
+      - name: Initialize Terraform
         run: terraform init
 
-      # Ejecutar Terraform Plan y guardar el plan en un archivo
+      # Paso 5: Ejecutar Terraform Plan y guardar el plan en un archivo
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan
 
-
-      # Ejecutar Terraform Apply solo cuando el plan es exitoso y en la rama main
+      # Paso 6: Ejecutar Terraform Apply solo cuando el plan sea exitoso y en la rama main
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
